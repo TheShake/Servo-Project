@@ -1,0 +1,54 @@
+#include <Servo.h>
+
+int servoPin = 3;
+Servo myServo;
+int pos = 0;
+int ledPin = 4;
+int trigPin = 10;
+int echoPin = 9;
+long duration;
+int distance;
+
+void setup()
+{
+  pinMode(ledPin, OUTPUT);
+  pinMode(trigPin, OUTPUT); 
+  pinMode(echoPin, INPUT); 
+  Serial.begin(9600);
+  myServo.attach(servoPin);
+}
+
+void loop()
+{
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  
+  duration = pulseIn(echoPin, HIGH);
+  distance= duration*0.034/2;
+  
+  Serial.print("Distance: ");
+  Serial.println(distance); 
+  
+  digitalWrite(ledPin,HIGH);
+  
+  if(distance>180)
+    distance=180;
+  if(distance==0)
+    distance=1;
+  
+  for (pos = 0; pos <= 180; pos += 180/distance) {
+    myServo.write(pos);
+    delay(1000/180);
+  }  
+  
+    digitalWrite(ledPin,LOW);
+  
+  for (pos = 180; pos >= 0; pos -= 180/distance) {
+    myServo.write(pos);
+    delay(1000/180);
+  }
+}
